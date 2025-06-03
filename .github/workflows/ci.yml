@@ -1,0 +1,36 @@
+name: Juice Shop Server Check
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Start Juice Shop server in background
+      run: npm start &
+
+    - name: Wait for server to start
+      run: sleep 15
+
+    - name: Check if Juice Shop is running
+      run: curl -f http://localhost:3000
+
+    - name: Run Juice Shop tests
+      run: npm test
+
+    - name: Stop Juice Shop server
+      run: |
+        # Find the process running on port 3000 and kill it
+        sudo lsof -t -i:3000 | xargs -r kill -9 || echo "No server running"
