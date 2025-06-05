@@ -28,6 +28,12 @@ jobs:
     - name: Check if Juice Shop is running
       run: curl -f http://localhost:3000
 
+    - name: Kill any process using port 3000
+      run: |
+          if lsof -i :3000; then
+              kill -9 $(lsof -t -i:3000)
+          fi
+
     - name: Run Juice Shop tests
       run: npm test
 
